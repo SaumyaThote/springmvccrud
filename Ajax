@@ -1,0 +1,45 @@
+<script>
+$(document).ready(function(){
+	$("#saveuser").submit(function(event){
+            //alert('test');
+		event.preventDefault();
+		ajaxPost();
+	}); 
+	
+	function ajaxPost()
+	{
+		var formData = {
+				 name : $("input[name='name']").val(),
+				 email : $("input[name='email']").val(),
+				 password : $("input[name='password']").val(),
+				 gender: $("input[name='gender']:checked").val(),
+				 course : $("input[name='course']:checked").val(),
+				 city: $("select[name='city']").val(),		    
+				}
+			console.log("formdata::::"formData);
+		
+		//Do Post
+		$.ajax({
+			type : "post",
+			contentType:"application/json",
+			url:"http://localhost:8080/mvc2/saveuser" ,
+			data:JSON.stringify(formData) , 
+			datatype:"application/text",
+			success:function(data)
+			{
+				if(data=="success")
+					{
+						alert("Thank You for registration!!Now you can login.");
+						//console.log("redired to login page");
+                    	location.assign("http://localhost:8060/mvc2/login.jsp");
+					}
+                                    console.log(data);
+			},
+		});
+		
+		
+		//ajaxPost();
+	}
+ });
+ 
+</script>
