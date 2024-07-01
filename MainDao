@@ -1,0 +1,148 @@
+package springmvc;
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+public class MainDao {
+	
+	//JdbcTemplate
+	private JdbcTemplate jdbcTemplate;
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
+		this.jdbcTemplate = jdbcTemplate;
+	}
+	
+	//for saving data
+	public int saveData(RegModel rm) {
+		String sql="insert into regtb (name,email,password,gender,course,city)values('"+rm.getName()+"','"+rm.getEmail()+"','"+rm.getPassword()+"','"+rm.getGender()+"','"+rm.getCourse()+"','"+rm.getCity()+"')";
+		return jdbcTemplate.update(sql);
+	}
+	
+	//for login
+	public List<RegModel>login(LogModel lm){
+		String sql="select * from regtb where email='"+lm.getEmail()+"' and password='"+lm.getPassword()+"'";
+		List<RegModel>list=jdbcTemplate.query(sql, new RowMapper<RegModel>() {
+			@Override
+			public RegModel mapRow(ResultSet rs, int arg1) throws SQLException {
+				RegModel rm= new RegModel();
+				rm.setEmail(rs.getString("email"));
+				rm.setPassword(rs.getString("password"));
+				return rm;
+			}		
+		});
+		List<RegModel>List1=list.size()>0?list:null;
+		return List1;
+	}
+	
+	//for adding product
+	public int addproduct(ProductModel pm) {
+		String sql="insert into addproduct_tb(productname,discount,price)values('"+pm.getProductname()+"','"+pm.getDiscount()+"','"+pm.getPrice()+"')";
+		return jdbcTemplate.update(sql);
+	}
+	
+	//for viewing product
+	public List<ProductModel>getAllProduct(){
+		String sql="select * from addproduct_tb";
+		return jdbcTemplate.query(sql,new RowMapper<ProductModel>() {
+
+			@Override
+			public ProductModel mapRow(ResultSet rs, int arg1) throws SQLException {
+				ProductModel pm=new ProductModel();
+				pm.setId(rs.getInt(1));
+				pm.setProductname(rs.getString(2));
+				pm.setDiscount(rs.getString(3));
+				pm.setPrice(rs.getString(4));
+					
+				return pm;
+				
+			}
+			
+		});
+	}
+	
+	//for getting product by Id
+	public List<ProductModel>getProductById(int id){
+		String sql="select * from addproduct_tb where id='"+id+"'";
+		return jdbcTemplate.query(sql,new RowMapper<ProductModel>() {
+
+			@Override
+			public ProductModel mapRow(ResultSet rs, int arg1) throws SQLException {
+				ProductModel pm=new ProductModel();
+				pm.setId(rs.getInt(1));
+				pm.setProductname(rs.getString(2));
+				pm.setDiscount(rs.getString(3));
+				pm.setPrice(rs.getString(4));	
+				return pm;
+			}
+		});
+	}
+	
+	
+	//for saving product
+		public int purchase(ProductModel pm) {
+			String sql="insert into purchase_tb (id,product,quantity,price,discount,finalprice)values('"+pm.getId()+"','"+pm.getProductname()+"','"+pm.getQuantity()+"','"+pm.getPrice()+"','"+pm.getDiscount()+"','"+pm.getFinalprice()+"')";
+			return jdbcTemplate.update(sql);
+		}
+		
+		
+		public List<RegModel>getAllReg(){
+			String sql="select * from regtb";
+			return jdbcTemplate.query(sql,new RowMapper<RegModel>() {
+
+				@Override
+				public RegModel mapRow(ResultSet rs, int arg1) throws SQLException {
+					RegModel rm=new RegModel();
+					rm.setId(rs.getInt(1));
+					rm.setName(rs.getString(2));
+					rm.setEmail(rs.getString(3));
+					rm.setPassword(rs.getString(4));
+					rm.setGender(rs.getString(5));
+					rm.setCourse(rs.getString(6));				
+					rm.setCity(rs.getString(7));				
+					return rm;
+					
+				}
+				
+			});
+		}
+		
+		public List<RegModel>getElementById(int id){
+			String sql="select * from regtb where id='"+id+"'";
+			return jdbcTemplate.query(sql,new RowMapper<RegModel>() {
+
+				@Override
+				public RegModel mapRow(ResultSet rs, int arg1) throws SQLException {
+					RegModel rm=new RegModel();
+					rm.setId(rs.getInt(1));
+					rm.setName(rs.getString(2));
+					rm.setEmail(rs.getString(3));
+					rm.setPassword(rs.getString(4));
+					rm.setGender(rs.getString(5));
+					rm.setCourse(rs.getString(6));				
+					rm.setCity(rs.getString(7));				
+					return rm;
+					
+					
+				}
+				
+			});
+		}
+		public int getUpdateData(RegModel rm) {
+			  String sql = "update regtb set name='"+rm.getName()+"',email='"+rm.getEmail()+"',password='"+rm.getPassword()+"',gender='"+rm.getGender()+"',course='"+rm.getCourse()+"',city='"+rm.getCity()+"' where id='"+rm.getId()+"'";
+			System.out.println("DONE"+rm.getId());
+			  return jdbcTemplate.update(sql);
+			 }
+		public int delete(int id){
+			String sql="delete from regtb where id='"+id+"'";
+			return jdbcTemplate.update(sql);
+		}
+
+	
+	
+	
+}
