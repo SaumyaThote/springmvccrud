@@ -1,0 +1,132 @@
+package springmvc;
+
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+@Controller
+public class MainController {
+	
+	@Autowired
+	MainDao dao;
+	
+	//get login page
+	@RequestMapping("/log")
+	public String getLog(){
+		return "login";
+	}
+	
+	//get registration page
+	@RequestMapping("/reg")
+	public String getReg() {
+		return "registration";
+	}
+	
+	//for registration
+	@RequestMapping(value="/saveuser",method = RequestMethod.POST)
+	public String saveData(@ModelAttribute("rm") RegModel rm,HttpSession session) {
+		int status= dao.saveData(rm);
+		session.setAttribute("sesreg","success");
+		return "login";
+	}
+	
+	//for login
+	@RequestMapping(value="dolog",method=RequestMethod.POST )
+	public String login(@ModelAttribute("lm")LogModel lm,HttpSession session) {
+		List<RegModel>list=dao.login(lm);
+		if(list!=null)
+		{
+			session.setAttribute("sesemail",lm.getEmail());
+			return "dashboard1";
+		}
+		else {
+			session.setAttribute("seslog", "fail");
+			return "redirect:viewproduct";
+		}
+	}
+	
+		//for adding product
+		@RequestMapping(value="/addproduct",method = RequestMethod.POST)
+		public String addproduct(@ModelAttribute("pm") ProductModel pm,HttpSession session) {
+			int status= dao.addproduct(pm);
+			session.setAttribute("sesproduct","success");
+			return "redirect:/viewproduct1";
+		};
+		
+		//for viewing product
+		@RequestMapping("/viewproduct1")
+		public String getAllProduct(Model model) {
+			List<ProductModel>list=dao.getAllProduct();
+			model.addAttribute("list", list);
+			return "dashboard1";
+			
+		}
+		
+		
+		//for viewing product form
+		@RequestMapping("/buy/{id}")
+		public String getProductById(@PathVariable int id, Model model) {
+			
+			List<ProductModel>list=dao.getProductById(id);
+			model.addAttribute("list", list);
+			return "buy";
+			
+		}
+		
+		
+		//for purchasing
+		@RequestMapping(value="/purchase",method = RequestMethod.POST)
+		public String purchase(@ModelAttribute("rm") ProductModel pm,HttpSession session) {
+			int status= dao.purchase(pm);
+			session.setAttribute("sesreg","success");
+			return "login";
+		}
+		
+	
+		
+		@RequestMapping("/table")
+		public String getAllRecord(Model model) {
+			List<RegModel>list=dao.getAllReg();
+			model.addAttribute("list", list);
+			return "viewreg";
+			
+		}
+		
+		
+		@RequestMapping("/edit/{id}")
+		public String getElementById(@PathVariable int id, Model model) {
+			System.out.print("SOMYA THOTE");
+			List<RegModel>list=dao.getElementById(id);
+			model.addAttribute("list", list);
+			return "update";
+			
+		}
+		@RequestMapping(value="/update",method=RequestMethod.POST) 
+		  public String getUpdateData(@ModelAttribute("rm")RegModel rm)
+		   { 
+			System.out.println("DONE"+rm.getId());
+		   	int status=dao.getUpdateData(rm); 
+		   
+		  return "dashboard1";
+		   }
+		
+		@RequestMapping("/delete/{id}")
+		public String delete(@PathVariable int id,HttpSession session) {
+			int status= dao.delete(id);
+			session.setAttribute("sesdelete", "delete");
+			return "registration";
+		}
+
+		
+		
+	
+
+}
